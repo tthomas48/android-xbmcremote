@@ -29,7 +29,6 @@ import org.xbmc.android.util.OnLongPressBackKeyTracker;
 import org.xbmc.api.type.ThumbSize;
 import org.xbmc.eventclient.ButtonCodes;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -38,8 +37,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -48,13 +45,15 @@ import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ViewFlipper;
 
+import com.actionbarsherlock.app.SherlockActivity;
+
 /**
  * Activity for remote control. At the moment that's the good ol' Xbox remote
  * control, more to come...
  * 
  * @author Team XBMC
  */
-public class RemoteActivity extends Activity {
+public class RemoteActivity extends SherlockActivity {
 
 	private final static String TAG = "RemoteActivity";
 
@@ -231,15 +230,15 @@ public class RemoteActivity extends Activity {
 		mRemoteController.setupButton(findViewById(R.id.RemoteXboxImgBtnPower), ButtonCodes.REMOTE_POWER);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return mRemoteController.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		return mRemoteController.onOptionsItemSelected(item);
-	}
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		return mRemoteController.onCreateOptionsMenu(menu);
+//	}
+//
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		return mRemoteController.onOptionsItemSelected(item);
+//	}
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {

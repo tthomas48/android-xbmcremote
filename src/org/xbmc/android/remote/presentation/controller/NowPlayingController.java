@@ -36,7 +36,6 @@ import org.xbmc.api.type.MediaType;
 import org.xbmc.api.type.SeekType;
 import org.xbmc.eventclient.ButtonCodes;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -213,7 +212,7 @@ public class NowPlayingController extends AbstractController implements INotifia
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(final Activity activity) {
+	public void onActivityResume(final NowPlayingActivity activity) {
 		super.onActivityResume(activity);
 		ConnectionFactory.getNowPlayingPoller(activity.getApplicationContext()).subscribe(mNowPlayingHandler);
 		mControlManager = ManagerFactory.getControlManager(this);

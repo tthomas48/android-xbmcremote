@@ -33,7 +33,6 @@ import org.xbmc.api.business.IControlManager;
 import org.xbmc.api.business.IInfoManager;
 import org.xbmc.api.presentation.INotifiableController;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
@@ -45,6 +44,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.actionbarsherlock.app.SherlockActivity;
 
 /**
  * Class that is called when XBMC locally tries to open any media content. The
@@ -60,7 +61,7 @@ public class MediaIntentController extends AbstractController implements IContro
 	private static final String CONFIRM_PLAY_ON_XBMC = "setting_confirm_play_on_xbmc";
 
 	
-	public MediaIntentController(Activity activity, Handler handler) {
+	public MediaIntentController(SherlockActivity activity, Handler handler) {
 		super.onCreate(activity, handler);
 		mInfoManager = ManagerFactory.getInfoManager(this);
 		mControlManager = ManagerFactory.getControlManager(this);
@@ -78,7 +79,7 @@ public class MediaIntentController extends AbstractController implements IContro
 	/* (non-Javadoc)
 	 * @see org.xbmc.android.remote.presentation.controller.IController#onActivityResume(android.app.Activity)
 	 */
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		mInfoManager = ManagerFactory.getInfoManager(this);
 		mControlManager = ManagerFactory.getControlManager(this);

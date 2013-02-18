@@ -41,16 +41,20 @@ import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 public abstract class ListController extends AbstractController implements Serializable, INotifiableController {
 	
@@ -72,7 +76,6 @@ public abstract class ListController extends AbstractController implements Seria
 	
 	protected AbsListView mList;
 	
-	private TextView mTitleView;
 	private ViewGroup mMessageGroup;
 	private TextView mMessageText;
 	private boolean hideWatched;
@@ -80,7 +83,7 @@ public abstract class ListController extends AbstractController implements Seria
 	
 	protected static Bitmap mFallbackBitmap;
 	protected IdleListDetector mPostScrollLoader;
-
+	
 	public void onCreate(Activity activity, Handler handler, AbsListView list) {
 		super.onCreate(activity, handler);
 		mList = list;
@@ -90,6 +93,8 @@ public abstract class ListController extends AbstractController implements Seria
 		isCreated = true;
 //		list.setOnScrollListener(new ScrollManager(ThumbSize.SMALL));
 	}
+	
+	
 
 	/**
 	 * Default listener is small
@@ -110,7 +115,7 @@ public abstract class ListController extends AbstractController implements Seria
 		return idleListener;
 	}
 	
-	public abstract void onContextItemSelected(MenuItem item);
+	public abstract void onContextItemSelected(android.view.MenuItem item);
 	public abstract void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo);
 	
 	public void onCreateOptionsMenu(Menu menu) { }
@@ -139,10 +144,6 @@ public abstract class ListController extends AbstractController implements Seria
 	
 	protected void refreshList() { }
 	
-	public void findTitleView(View parent) {
-		mTitleView = (TextView)parent.findViewById(R.id.titlebar_text);	
-	}
-	
 	public void findMessageView(View parent) {
 		mMessageGroup = (ViewGroup)parent.findViewById(R.id.listmessage);	
 		mMessageText = (TextView)parent.findViewById(R.id.listmessage_text);	
@@ -150,13 +151,13 @@ public abstract class ListController extends AbstractController implements Seria
 	}
 	
 	protected void setTitle(final String title) {
-		if (mTitleView != null) {
 			mHandler.post(new Runnable() {
 				public void run() {
-					mTitleView.setText(title);
+					if(mActivity instanceof SherlockActivity) {
+						((SherlockActivity) mActivity).getSupportActionBar().setTitle(title);
+					}
 				}
 			});
-		}
 	}
 		
 	protected boolean isCreated() {
@@ -169,11 +170,7 @@ public abstract class ListController extends AbstractController implements Seria
 				public void run() {
 					mMessageText.setText(message);
 					mMessageText.setCompoundDrawablesWithIntrinsicBounds(imageResource, 0, 0, 0);
-					if(mList instanceof GridView) {
-						((GridView)mList).setAdapter(null);
-					} else {
-						((ListView)mList).setAdapter(null);
-					}
+					setAdapter(null);
 					mMessageGroup.setVisibility(View.VISIBLE);
 				}
 			});
@@ -186,26 +183,38 @@ public abstract class ListController extends AbstractController implements Seria
 		}
 	}
 	
+	protected void setAdapter(ListAdapter adapter) {
+		if(mList instanceof GridView) {
+			((GridView)mList).setAdapter(adapter);
+		} else {
+			((ListView)mList).setAdapter(adapter);
+		}
+		mList.setVisibility(View.VISIBLE);
+		mActivity.setProgressBarIndeterminateVisibility(false);
+	}
+	
 	protected void showOnLoading() {
-		mHandler.post(new Runnable() {
-			public void run() {
-				if(mList instanceof GridView) {
-					((GridView)mList).setAdapter(new LoadingAdapter(mActivity));
-				} else {
-					((ListView)mList).setAdapter(new LoadingAdapter(mActivity));
-				}
-				mList.setVisibility(View.VISIBLE);
-			}
-		});
+		mActivity.setProgressBarIndeterminateVisibility(true);
+		
 	}
 	
 	protected boolean isLoading() {
-		return mList.getAdapter() instanceof LoadingAdapter;
+		return mList.getAdapter() == null;
 	}
 	
 	@Override
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
+		onResume();
+	}
+	
+	@Override
+	public void onActivityResume(SherlockFragment fragment) {
+		super.onActivityResume(fragment);
+		onResume();
+	}
+	
+	private void onResume() {
 		if (isCreated()) {
 			SharedPreferences sp = mActivity.getSharedPreferences("global", Context.MODE_PRIVATE);
 			boolean hideWatched = sp.getBoolean(PREF_HIDE_WATCHED, false);
@@ -256,5 +265,9 @@ public abstract class ListController extends AbstractController implements Seria
 			
 			return row;
 		}
+	}
+	
+	public AbsListView getListView() {
+		return mList;
 	}
 }

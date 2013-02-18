@@ -32,7 +32,6 @@ import org.xbmc.api.business.IEventClientManager;
 import org.xbmc.api.type.ThumbSize;
 import org.xbmc.eventclient.ButtonCodes;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION;
@@ -42,13 +41,15 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.FrameLayout;
 
-public abstract class AbsListActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
+public abstract class AbsListActivity extends SherlockActivity {
 
 	private static final int MENU_NOW_PLAYING = 501;
 	private static final int MENU_REMOTE = 502;
@@ -90,13 +91,9 @@ public abstract class AbsListActivity extends Activity {
 		// remove nasty top fading edge
 		FrameLayout topFrame = (FrameLayout)findViewById(android.R.id.content);
 		topFrame.setForeground(null);
-		mListController = (ListController)getLastNonConfigurationInstance();
-		if (mListController == null) {
-			mListController = (ListController) getIntent().getSerializableExtra(ListController.EXTRA_LIST_CONTROLLER);
-			mListController.findTitleView(findViewById(R.id.blanklist_outer_layout));
-			mListController.findMessageView(findViewById(R.id.blanklist_outer_layout));
-			mListController.onCreate(this, new Handler(), (AbsListView)findViewById(R.id.blanklist_list));
-		}
+		mListController = (ListController) getIntent().getSerializableExtra(ListController.EXTRA_LIST_CONTROLLER);
+		mListController.findMessageView(findViewById(R.id.blanklist_outer_layout));
+		mListController.onCreate(this, new Handler(), (AbsListView)findViewById(R.id.blanklist_list));
 		mConfigurationManager = ConfigurationManager.getInstance(this);
 	}
 	
@@ -111,15 +108,16 @@ public abstract class AbsListActivity extends Activity {
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		mListController.onCreateContextMenu(menu, v, menuInfo);
 	}
-
+	
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
+	public boolean onContextItemSelected(android.view.MenuItem item) {
 		mListController.onContextItemSelected(item);
 		return super.onContextItemSelected(item);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		
 		menu.add(0, MENU_NOW_PLAYING, 0, "Now playing").setIcon(R.drawable.menu_nowplaying);
 		mListController.onCreateOptionsMenu(menu);
 		menu.add(0, MENU_REMOTE, 0, "Remote control").setIcon(R.drawable.menu_remote);

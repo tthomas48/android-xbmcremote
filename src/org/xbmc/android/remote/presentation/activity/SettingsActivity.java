@@ -30,10 +30,11 @@ import org.xbmc.eventclient.ButtonCodes;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.view.Display;
 import android.view.KeyEvent;
+
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
 /**
  * The XBMC remote's preferences page. This is a little special since we want
@@ -45,7 +46,7 @@ import android.view.KeyEvent;
  * 
  * @author Team XBMC
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends SherlockPreferenceActivity {
 	
 	public final static String SUMMARY_VALUE_PLACEHOLDER = "%value%";
 	public final static String JUMP_TO = "jump_to";

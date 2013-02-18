@@ -27,25 +27,23 @@ import org.xbmc.android.widget.gestureremote.GestureRemoteView;
 import org.xbmc.api.type.ThumbSize;
 import org.xbmc.eventclient.ButtonCodes;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
+
+import com.actionbarsherlock.app.SherlockActivity;
 
 /**
  * Gesture mode. Let's see how this works out...
  * 
  * @author Team XBMC
  */
-public class GestureRemoteActivity extends Activity {
+public class GestureRemoteActivity extends SherlockActivity {
 	
 	private final static String TAG = "GestureRemoteActivity";
 	
@@ -150,32 +148,32 @@ public class GestureRemoteActivity extends Activity {
 		mRemoteController.setupButton(findViewById(R.id.RemoteXboxImgBtnNext), ButtonCodes.REMOTE_SKIP_PLUS);
 	}
 	
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, MENU_SWITCH_BUTTONS, 0, "Switch to buttons").setIcon(R.drawable.menu_remote);
-		menu.add(0, MENU_NOW_PLAYING, 0, "Now playing").setIcon(R.drawable.menu_nowplaying);
-		menu.add(0, MENU_ENTER_TEXT, 0, "Text Entry").setIcon(R.drawable.menu_text_entry);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent = null;
-		switch (item.getItemId()) {
-			case MENU_NOW_PLAYING:
-				intent = new Intent(this, NowPlayingActivity.class);
-				break;
-			case MENU_SWITCH_BUTTONS:
-				intent = new Intent(this, RemoteActivity.class);
-				intent.addFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
-				break;
-			case MENU_ENTER_TEXT:
-				showDialog(RemoteController.DIALOG_SENDTEXT);
-				break;
-		}
-		if (intent != null) {
-			startActivity(intent);
-			return true;
-		}
-		return false;
-	}
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		menu.add(0, MENU_SWITCH_BUTTONS, 0, "Switch to buttons").setIcon(R.drawable.menu_remote);
+//		menu.add(0, MENU_NOW_PLAYING, 0, "Now playing").setIcon(R.drawable.menu_nowplaying);
+//		menu.add(0, MENU_ENTER_TEXT, 0, "Text Entry").setIcon(R.drawable.menu_text_entry);
+//		return true;
+//	}
+//
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		Intent intent = null;
+//		switch (item.getItemId()) {
+//			case MENU_NOW_PLAYING:
+//				intent = new Intent(this, NowPlayingActivity.class);
+//				break;
+//			case MENU_SWITCH_BUTTONS:
+//				intent = new Intent(this, RemoteActivity.class);
+//				intent.addFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+//				break;
+//			case MENU_ENTER_TEXT:
+//				showDialog(RemoteController.DIALOG_SENDTEXT);
+//				break;
+//		}
+//		if (intent != null) {
+//			startActivity(intent);
+//			return true;
+//		}
+//		return false;
+//	}
 }

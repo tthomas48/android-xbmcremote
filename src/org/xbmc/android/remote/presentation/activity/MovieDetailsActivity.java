@@ -69,7 +69,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MovieDetailsActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+
+public class MovieDetailsActivity extends SherlockActivity {
 	
 	private static final String NO_DATA = "-";
 
@@ -150,7 +152,7 @@ public class MovieDetailsActivity extends Activity {
 		private IControlManager mControlManager;
 		private final Movie mMovie;
 		
-		MovieDetailsController(Activity activity, Movie movie) {
+		MovieDetailsController(SherlockActivity activity, Movie movie) {
 			super.onCreate(activity, new Handler());
 			mActivity = activity;
 			mMovie = movie;

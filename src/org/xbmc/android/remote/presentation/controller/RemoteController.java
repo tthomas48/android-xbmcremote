@@ -37,7 +37,6 @@ import org.xbmc.api.info.GuiSettings;
 import org.xbmc.api.presentation.INotifiableController;
 import org.xbmc.eventclient.ButtonCodes;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -56,6 +55,8 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.actionbarsherlock.app.SherlockActivity;
 
 public class RemoteController extends AbstractController implements INotifiableController, IController {
 
@@ -504,7 +505,7 @@ public class RemoteController extends AbstractController implements INotifiableC
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		mHandler = new Handler();
 		mEventClientManager = ManagerFactory.getEventClientManager(this);

@@ -42,14 +42,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -57,16 +55,24 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.SubMenu;
+
 public class SongListController extends ListController implements IController {
-	
+
 	private static final int mThumbSize = ThumbSize.SMALL;
 	public static final int ITEM_CONTEXT_QUEUE = 1;
 	public static final int ITEM_CONTEXT_PLAY = 2;
 	public static final int ITEM_CONTEXT_INFO = 3;
-	
+
 	public static final int MENU_PLAY_ALL = 1;
 	public static final int MENU_SORT = 2;
 	public static final int MENU_SORT_BY_ALBUM_ASC = 31;
@@ -79,163 +85,235 @@ public class SongListController extends ListController implements IController {
 	public static final int MENU_SORT_BY_FILENAME_DESC = 38;
 
 	private static final String PREF_DEFAULT_SELECTION_ACTION = "setting_default_selection_action";
-	private static final String DEFAULT_ACTION_PLAY = "0";	
-	
+	private static final String DEFAULT_ACTION_PLAY = "0";
+
 	private static final int INT_DEFAULT_ACTION_PLAY = 0;
-	private static final int INT_DEFAULT_ACTION_QUEUE = 1;	
-	
+	private static final int INT_DEFAULT_ACTION_QUEUE = 1;
+
 	private Album mAlbum;
 	private Artist mArtist;
 	private Genre mGenre;
-	
+
 	private IMusicManager mMusicManager;
-	
+
 	private boolean mLoadCovers = false;
-	
+
+	public void onCreate(SherlockFragment fragment, Handler handler, AbsListView list) {
+		Activity activity = fragment.getActivity();
+		onCreate(activity, handler, list);
+	}
 	public void onCreate(Activity activity, Handler handler, AbsListView list) {
 		
+
 		mMusicManager = ManagerFactory.getMusicManager(this);
-		
-		((ISortableManager)mMusicManager).setSortKey(AbstractManager.PREF_SORT_KEY_SONG);
-		((ISortableManager)mMusicManager).setIgnoreArticle(PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext()).getBoolean(ISortableManager.SETTING_IGNORE_ARTICLE, true));
-		((ISortableManager)mMusicManager).setPreferences(activity.getPreferences(Context.MODE_PRIVATE));
-		
+
+		((ISortableManager) mMusicManager)
+				.setSortKey(AbstractManager.PREF_SORT_KEY_SONG);
+		((ISortableManager) mMusicManager).setIgnoreArticle(PreferenceManager
+				.getDefaultSharedPreferences(activity.getApplicationContext())
+				.getBoolean(ISortableManager.SETTING_IGNORE_ARTICLE, true));
+		((ISortableManager) mMusicManager).setPreferences(activity
+				.getPreferences(Context.MODE_PRIVATE));
+
 		final String sdError = ImportUtilities.assertSdCard();
 		mLoadCovers = sdError == null;
-		
+
 		if (!isCreated()) {
 			super.onCreate(activity, handler, list);
-			
+
 			if (!mLoadCovers) {
-				Toast toast = Toast.makeText(activity, sdError + " Displaying place holders only.", Toast.LENGTH_LONG);
+				Toast toast = Toast.makeText(activity, sdError
+						+ " Displaying place holders only.", Toast.LENGTH_LONG);
 				toast.show();
 			}
-			
-			mAlbum = (Album)mActivity.getIntent().getSerializableExtra(EXTRA_ALBUM);
-			mArtist = (Artist)mActivity.getIntent().getSerializableExtra(EXTRA_ARTIST);
-			mGenre = (Genre)mActivity.getIntent().getSerializableExtra(EXTRA_GENRE);
+
+			mAlbum = (Album) mActivity.getIntent().getSerializableExtra(
+					EXTRA_ALBUM);
+			mArtist = (Artist) mActivity.getIntent().getSerializableExtra(
+					EXTRA_ARTIST);
+			mGenre = (Genre) mActivity.getIntent().getSerializableExtra(
+					EXTRA_GENRE);
 			mActivity.registerForContextMenu(mList);
-			
-			mFallbackBitmap = BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.icon_song);
+
+			mFallbackBitmap = BitmapFactory.decodeResource(
+					mActivity.getResources(), R.drawable.icon_song);
+			// when adding a background image go from least to greatest
+			final LinearLayout outerLayout = (LinearLayout) activity
+					.findViewById(R.id.blanklist_outer_layout);
+			if (mAlbum != null) {
+				if (mMusicManager.coverLoaded(mAlbum, ThumbSize.BIG)) {
+					setBackground(outerLayout,
+							mMusicManager.getCoverSync(mAlbum, ThumbSize.BIG));
+				} else {
+					mMusicManager.getCover(new DataResponse<Bitmap>() {
+						@Override
+						public void run() {
+							setBackground(outerLayout, this.value);
+						}
+					}, mAlbum, ThumbSize.BIG, null, mActivity, false);
+				}
+			} else if (mArtist != null) {
+				if (mMusicManager.coverLoaded(mArtist, ThumbSize.BIG)) {
+					setBackground(outerLayout,
+							mMusicManager.getCoverSync(mArtist, ThumbSize.BIG));
+				} else {
+					mMusicManager.getCover(new DataResponse<Bitmap>() {
+						@Override
+						public void run() {
+							setBackground(outerLayout, this.value);
+						}
+					}, mArtist, ThumbSize.BIG, null, mActivity, false);
+				}
+			}
+
 			setupIdleListener();
-			
+
 			mList.setOnItemClickListener(new OnItemClickListener() {
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					if(isLoading()) return;
-					final Song song = (Song)mList.getAdapter().getItem(((ThreeLabelsItemView)view).position);
-					final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity.getApplicationContext());
-					final int SelectionType = Integer.parseInt(prefs.getString(PREF_DEFAULT_SELECTION_ACTION, DEFAULT_ACTION_PLAY));
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					if (isLoading())
+						return;
+					final Song song = (Song) mList.getAdapter().getItem(
+							((ThreeLabelsItemView) view).position);
+					final SharedPreferences prefs = PreferenceManager
+							.getDefaultSharedPreferences(mActivity
+									.getApplicationContext());
+					final int SelectionType = Integer.parseInt(prefs.getString(
+							PREF_DEFAULT_SELECTION_ACTION, DEFAULT_ACTION_PLAY));
 					switch (SelectionType) {
-						case INT_DEFAULT_ACTION_PLAY:
-							if (mAlbum == null) {
-								mMusicManager.play(new QueryResponse(
-									mActivity, 
-									"Playing \"" + song.title + "\" by " + song.artist + "...", 
-									"Error playing song!",
-									true
-								), song, mActivity.getApplicationContext());
-							} else {
-								mMusicManager.play(new QueryResponse(
-									mActivity, 
-									"Playing album \"" + song.album + "\" starting with song \"" + song.title + "\" by " + song.artist + "...",
-									"Error playing song!",
-									true
-								), mAlbum, song, mActivity.getApplicationContext());
-							}
-							break;
-						case INT_DEFAULT_ACTION_QUEUE:					
-							if (mAlbum == null) 
-							{
-								mMusicManager.addToPlaylist(new QueryResponse(mActivity, "Song added to playlist.", "Error adding song!"), song, mActivity.getApplicationContext());
-							} 
-							else 
-							{
-								mMusicManager.addToPlaylist(new QueryResponse(mActivity, "Playlist empty, added whole album.", "Song added to playlist."), mAlbum, song, mActivity.getApplicationContext());
-							}
-							break;
-						default:
-							return;
+					case INT_DEFAULT_ACTION_PLAY:
+						if (mAlbum == null) {
+							mMusicManager.play(new QueryResponse(mActivity,
+									"Playing \"" + song.title + "\" by "
+											+ song.artist + "...",
+									"Error playing song!", true), song,
+									mActivity.getApplicationContext());
+						} else {
+							mMusicManager.play(new QueryResponse(mActivity,
+									"Playing album \"" + song.album
+											+ "\" starting with song \""
+											+ song.title + "\" by "
+											+ song.artist + "...",
+									"Error playing song!", true), mAlbum, song,
+									mActivity.getApplicationContext());
+						}
+						break;
+					case INT_DEFAULT_ACTION_QUEUE:
+						if (mAlbum == null) {
+							mMusicManager.addToPlaylist(new QueryResponse(
+									mActivity, "Song added to playlist.",
+									"Error adding song!"), song, mActivity
+									.getApplicationContext());
+						} else {
+							mMusicManager.addToPlaylist(new QueryResponse(
+									mActivity,
+									"Playlist empty, added whole album.",
+									"Song added to playlist."), mAlbum, song,
+									mActivity.getApplicationContext());
+						}
+						break;
+					default:
+						return;
 					}
 				}
 			});
-					
+
 			mList.setOnKeyListener(new ListControllerOnKeyListener<Song>());
 			fetch();
 		}
 	}
-	
+
+	private void setBackground(LinearLayout outerLayout, Bitmap background) {
+		ImageView imageView = (ImageView) mActivity.findViewById(R.id.art_background);
+		imageView.setImageBitmap(background);
+	}
+
 	@SuppressLint("")
 	private void fetch() {
-		final String title = mAlbum != null ? mAlbum.name + " - " : mArtist != null ? mArtist.name + " - " : mGenre != null ? mGenre.name + " - " : "" + "Songs";
+		final String title = mAlbum != null ? mAlbum.name + " - "
+				: mArtist != null ? mArtist.name + " - "
+						: mGenre != null ? mGenre.name + " - " : "" + "Songs";
 		DataResponse<ArrayList<Song>> response = new DataResponse<ArrayList<Song>>() {
 			public void run() {
 				if (value.size() > 0) {
 					setTitle(title + " (" + value.size() + ")");
-					((ListView)mList).setAdapter(new SongAdapter(mActivity, value));
+					((ListView) mList).setAdapter(new SongAdapter(mActivity,
+							value));
 				} else {
 					setTitle(title);
-					setNoDataMessage("No songs found", R.drawable.icon_song_dark);
+					setNoDataMessage("No songs found",
+							R.drawable.icon_song_dark);
 				}
 			}
 		};
-		
+
 		showOnLoading();
 		setTitle(title + "...");
 		if (mAlbum != null) {
-			mMusicManager.getSongs(response, mAlbum, mActivity.getApplicationContext());
+			mMusicManager.getSongs(response, mAlbum,
+					mActivity.getApplicationContext());
 		} else if (mArtist != null) {
-			mMusicManager.getSongs(response, mArtist, mActivity.getApplicationContext());
+			mMusicManager.getSongs(response, mArtist,
+					mActivity.getApplicationContext());
 		} else if (mGenre != null) {
-			mMusicManager.getSongs(response, mGenre, mActivity.getApplicationContext());
+			mMusicManager.getSongs(response, mGenre,
+					mActivity.getApplicationContext());
 		}
 	}
-	
+
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
 		// be aware that this must be explicitly called by your activity!
-		final ThreeLabelsItemView view = (ThreeLabelsItemView)((AdapterContextMenuInfo)menuInfo).targetView;
-		menu.setHeaderTitle(((Song)mList.getItemAtPosition(view.getPosition())).title);
+		final ThreeLabelsItemView view = (ThreeLabelsItemView) ((AdapterContextMenuInfo) menuInfo).targetView;
+		menu.setHeaderTitle(((Song) mList.getItemAtPosition(view.getPosition())).title);
 		menu.add(0, ITEM_CONTEXT_QUEUE, 1, "Queue Song");
 		menu.add(0, ITEM_CONTEXT_PLAY, 2, "Play Song");
 	}
-	
-	public void onContextItemSelected(MenuItem item) {
+
+	public void onContextItemSelected(android.view.MenuItem item) {
 		// be aware that this must be explicitly called by your activity!
-		final Song song = (Song)mList.getAdapter().getItem(((ThreeLabelsItemView)((AdapterContextMenuInfo)item.getMenuInfo()).targetView).position);
+		final Song song = (Song) mList.getAdapter().getItem(
+				((ThreeLabelsItemView) ((AdapterContextMenuInfo) item
+						.getMenuInfo()).targetView).position);
 		switch (item.getItemId()) {
-			case ITEM_CONTEXT_QUEUE:
-				if (mAlbum == null) {
-					mMusicManager.addToPlaylist(new QueryResponse(mActivity, "Song added to playlist.", "Error adding song!"), song, mActivity.getApplicationContext());
-				} else {
-					mMusicManager.addToPlaylist(new QueryResponse(mActivity, "Playlist empty, added whole album.", "Song added to playlist."), mAlbum, song, mActivity.getApplicationContext());
-				}
-				break;
-			case ITEM_CONTEXT_PLAY:
-				if (mAlbum == null) {
-					mMusicManager.play(new QueryResponse(
-						mActivity, 
-						"Playing \"" + song.title + "\" by " + song.artist + "...", 
-						"Error playing song!",
-						true
-					), song, mActivity.getApplicationContext());
-				} else {
-					mMusicManager.play(new QueryResponse(
-						mActivity, 
-						"Playing album \"" + song.album + "\" starting with song \"" + song.title + "\" by " + song.artist + "...",
-						"Error playing song!",
-						true
-					), mAlbum, song, mActivity.getApplicationContext());
-				}
-				break;
-			default:
-				return;
+		case ITEM_CONTEXT_QUEUE:
+			if (mAlbum == null) {
+				mMusicManager.addToPlaylist(new QueryResponse(mActivity,
+						"Song added to playlist.", "Error adding song!"), song,
+						mActivity.getApplicationContext());
+			} else {
+				mMusicManager.addToPlaylist(new QueryResponse(mActivity,
+						"Playlist empty, added whole album.",
+						"Song added to playlist."), mAlbum, song, mActivity
+						.getApplicationContext());
+			}
+			break;
+		case ITEM_CONTEXT_PLAY:
+			if (mAlbum == null) {
+				mMusicManager.play(new QueryResponse(mActivity, "Playing \""
+						+ song.title + "\" by " + song.artist + "...",
+						"Error playing song!", true), song, mActivity
+						.getApplicationContext());
+			} else {
+				mMusicManager.play(new QueryResponse(mActivity,
+						"Playing album \"" + song.album
+								+ "\" starting with song \"" + song.title
+								+ "\" by " + song.artist + "...",
+						"Error playing song!", true), mAlbum, song, mActivity
+						.getApplicationContext());
+			}
+			break;
+		default:
+			return;
 		}
 	}
-	
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu) {
 		menu.add(0, MENU_PLAY_ALL, 0, "Play all").setIcon(R.drawable.menu_song);
-		SubMenu sortMenu = menu.addSubMenu(0, MENU_SORT, 0, "Sort").setIcon(R.drawable.menu_sort);
+		SubMenu sortMenu = menu.addSubMenu(0, MENU_SORT, 0, "Sort").setIcon(
+				R.drawable.menu_sort);
 		sortMenu.add(2, MENU_SORT_BY_ALBUM_ASC, 0, "by Album ascending");
 		sortMenu.add(2, MENU_SORT_BY_ALBUM_DESC, 0, "by Album descending");
 		sortMenu.add(2, MENU_SORT_BY_ARTIST_ASC, 0, "by Artist ascending");
@@ -245,7 +323,7 @@ public class SongListController extends ListController implements IController {
 		sortMenu.add(2, MENU_SORT_BY_FILENAME_ASC, 0, "by Filename ascending");
 		sortMenu.add(2, MENU_SORT_BY_FILENAME_DESC, 0, "by Filename descending");
 	}
-	
+
 	@Override
 	public void onOptionsItemSelected(MenuItem item) {
 		final SharedPreferences.Editor ed;
@@ -255,99 +333,112 @@ public class SongListController extends ListController implements IController {
 			final Genre genre = mGenre;
 			final Artist artist = mArtist;
 			if (album != null) {
-				mMusicManager.play(new QueryResponse(
-						mActivity, 
-						"Playing all songs of album " + album.name + " by " + album.artist + "...", 
-						"Error playing songs!",
-						true
-					), album, mActivity.getApplicationContext());			
+				mMusicManager.play(new QueryResponse(mActivity,
+						"Playing all songs of album " + album.name + " by "
+								+ album.artist + "...", "Error playing songs!",
+						true), album, mActivity.getApplicationContext());
 			} else if (artist != null) {
-				mMusicManager.play(new QueryResponse(
-						mActivity, 
-						"Playing all songs from " + artist.name + "...", 
-						"Error playing songs!",
-						true
-					), artist, mActivity.getApplicationContext());
+				mMusicManager.play(new QueryResponse(mActivity,
+						"Playing all songs from " + artist.name + "...",
+						"Error playing songs!", true), artist, mActivity
+						.getApplicationContext());
 			} else if (genre != null) {
-				mMusicManager.play(new QueryResponse(
-						mActivity, 
-						"Playing all songs of genre " + genre.name + "...", 
-						"Error playing songs!",
-						true
-					), genre, mActivity.getApplicationContext());
+				mMusicManager.play(new QueryResponse(mActivity,
+						"Playing all songs of genre " + genre.name + "...",
+						"Error playing songs!", true), genre, mActivity
+						.getApplicationContext());
 			}
 			break;
 		case MENU_SORT_BY_ALBUM_ASC:
 			ed = mActivity.getPreferences(Context.MODE_PRIVATE).edit();
-			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ALBUM);
-			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_ASC);
+			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ALBUM);
+			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_ASC);
 			ed.commit();
 			fetch();
 			break;
 		case MENU_SORT_BY_ALBUM_DESC:
 			ed = mActivity.getPreferences(Context.MODE_PRIVATE).edit();
-			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ALBUM);
-			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_DESC);
+			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ALBUM);
+			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_DESC);
 			ed.commit();
 			fetch();
 			break;
 		case MENU_SORT_BY_ARTIST_ASC:
 			ed = mActivity.getPreferences(Context.MODE_PRIVATE).edit();
-			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ARTIST);
-			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_ASC);
+			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ARTIST);
+			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_ASC);
 			ed.commit();
 			fetch();
 			break;
 		case MENU_SORT_BY_ARTIST_DESC:
 			ed = mActivity.getPreferences(Context.MODE_PRIVATE).edit();
-			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ARTIST);
-			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_DESC);
+			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ARTIST);
+			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_DESC);
 			ed.commit();
 			fetch();
 			break;
 		case MENU_SORT_BY_TITLE_ASC:
 			ed = mActivity.getPreferences(Context.MODE_PRIVATE).edit();
-			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.TITLE);
-			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_ASC);
+			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.TITLE);
+			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_ASC);
 			ed.commit();
 			fetch();
 			break;
 		case MENU_SORT_BY_TITLE_DESC:
 			ed = mActivity.getPreferences(Context.MODE_PRIVATE).edit();
-			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.TITLE);
-			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_DESC);
+			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.TITLE);
+			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_DESC);
 			ed.commit();
 			fetch();
 			break;
 		case MENU_SORT_BY_FILENAME_ASC:
 			ed = mActivity.getPreferences(Context.MODE_PRIVATE).edit();
-			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.FILENAME);
-			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_ASC);
+			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.FILENAME);
+			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_ASC);
 			ed.commit();
 			fetch();
 			break;
 		case MENU_SORT_BY_FILENAME_DESC:
 			ed = mActivity.getPreferences(Context.MODE_PRIVATE).edit();
-			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.FILENAME);
-			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX + AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_DESC);
+			ed.putInt(AbstractManager.PREF_SORT_BY_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.FILENAME);
+			ed.putString(AbstractManager.PREF_SORT_ORDER_PREFIX
+					+ AbstractManager.PREF_SORT_KEY_SONG, SortType.ORDER_DESC);
 			ed.commit();
 			fetch();
 			break;
 		}
 	}
-	
+
 	private class SongAdapter extends ArrayAdapter<Song> {
 		SongAdapter(Activity activity, ArrayList<Song> items) {
 			super(activity, 0, items);
 		}
+
 		public View getView(int position, View convertView, ViewGroup parent) {
 			final ThreeLabelsItemView view;
 			if (convertView == null) {
-				view = new ThreeLabelsItemView(mActivity, mMusicManager, parent.getWidth(), mFallbackBitmap, mList.getSelector(), false);
+				view = new ThreeLabelsItemView(mActivity, mMusicManager,
+						parent.getWidth(), mFallbackBitmap,
+						mList.getSelector(), false);
 			} else {
-				view = (ThreeLabelsItemView)convertView;
+				view = (ThreeLabelsItemView) convertView;
 			}
-			
+
 			final Song song = getItem(position);
 			view.reset();
 			view.position = position;
@@ -360,19 +451,20 @@ public class SongListController extends ListController implements IController {
 				view.subtitle = song.artist;
 			}
 			view.subsubtitle = song.getDuration();
-			
+
 			if (mLoadCovers) {
-				if(mMusicManager.coverLoaded(song, mThumbSize)){
+				if (mMusicManager.coverLoaded(song, mThumbSize)) {
 					view.setCover(mMusicManager.getCoverSync(song, mThumbSize));
-				}else{
+				} else {
 					view.setCover(null);
-					view.getResponse().load(song, !mPostScrollLoader.isListIdle());
+					view.getResponse().load(song,
+							!mPostScrollLoader.isListIdle());
 				}
 			}
 			return view;
 		}
 	}
-	
+
 	public void onActivityPause() {
 		if (mMusicManager != null) {
 			mMusicManager.setController(null);
@@ -381,10 +473,10 @@ public class SongListController extends ListController implements IController {
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		mMusicManager = ManagerFactory.getMusicManager(this);
 	}
-	
+
 	private static final long serialVersionUID = 755529227668553163L;
 }

@@ -59,7 +59,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class EpisodeDetailsActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+
+public class EpisodeDetailsActivity extends SherlockActivity {
 	
 	private static final String NO_DATA = "-";
 	
@@ -133,7 +135,7 @@ public class EpisodeDetailsActivity extends Activity {
 		private IControlManager mControlManager;
 		private final Episode mEpisode;
 		
-		EpisodeDetailsController(Activity activity, Episode episode) {
+		EpisodeDetailsController(SherlockActivity activity, Episode episode) {
 			super.onCreate(activity, new Handler());
 			mActivity = activity;
 			mEpisode = episode;

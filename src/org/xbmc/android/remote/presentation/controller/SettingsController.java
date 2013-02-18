@@ -47,6 +47,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+
 public class SettingsController extends AbstractController implements INotifiableController, IController, OnSharedPreferenceChangeListener {
 	private static final String TAG = "SettingsController";
 	
@@ -60,7 +62,7 @@ public class SettingsController extends AbstractController implements INotifiabl
 	private PreferenceActivity mPreferenceActivity;		
 	private final Hashtable<String, String> mSummaries = new Hashtable<String, String>();
 	
-	public SettingsController(PreferenceActivity activity, Handler handler) {
+	public SettingsController(SherlockPreferenceActivity activity, Handler handler) {
 		mPreferenceActivity = activity;
 		super.onCreate(activity, handler);
 	}
@@ -267,7 +269,7 @@ public class SettingsController extends AbstractController implements INotifiabl
 		super.onActivityPause();
 	}
 	
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockPreferenceActivity activity) {
 		super.onActivityResume(activity);
 		final ArrayList<Host> hosts = HostFactory.getHosts(activity.getApplicationContext()); 
 		if (hosts.size() == 1) {

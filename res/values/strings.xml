@@ -61,5 +61,13 @@ Have fun.</string>
     <string name="sort_lastplayed_r">Recently Played (reverse)</string>
     <!-- End sort -->
     <string name="crash_toast_text">XBMC Crashed. Generating error report.</string>
+    <string name="title_musicitem_detail">Music Item Detail</string>
+    <string name="title_musicitem_list">Music Library</string>
+    <string name="title_section3">Section 3</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section1">Section 1</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_music_library">Music Library</string>
 
 </resources>

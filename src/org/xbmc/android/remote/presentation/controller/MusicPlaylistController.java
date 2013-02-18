@@ -52,7 +52,6 @@ import android.os.Message;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -62,6 +61,9 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 public class MusicPlaylistController extends ListController implements IController, Callback {
 	
@@ -270,7 +272,7 @@ public class MusicPlaylistController extends ListController implements IControll
 		*/
 	}
 	
-	public void onContextItemSelected(MenuItem item) {
+	public void onContextItemSelected(android.view.MenuItem item) {
 		// be aware that this must be explicitly called by your activity!
 		final PlaylistItem playlistItem = (PlaylistItem)mList.getAdapter().getItem(((OneLabelItemView)((AdapterContextMenuInfo)item.getMenuInfo()).targetView).position);
 		switch (item.getItemId()) {
@@ -355,7 +357,7 @@ public class MusicPlaylistController extends ListController implements IControll
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		ConnectionFactory.getNowPlayingPoller(activity.getApplicationContext()).subscribe(mNowPlayingHandler);
 		

@@ -52,6 +52,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+
 public class ActorListController extends ListController implements IController {
 	
 	private static final int mThumbSize = ThumbSize.SMALL;
@@ -69,7 +71,7 @@ public class ActorListController extends ListController implements IController {
 		mType = type;
 	}
 	
-	public void onCreate(Activity activity, Handler handler, AbsListView list) {
+	public void onCreate(SherlockActivity activity, Handler handler, AbsListView list) {
 		
 		mVideoManager = ManagerFactory.getVideoManager(this);
 		mTvShowManager = ManagerFactory.getTvManager(this);
@@ -182,7 +184,8 @@ public class ActorListController extends ListController implements IController {
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(Activity activity) {
+	@Override
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		mVideoManager = ManagerFactory.getVideoManager(this);
 		mTvShowManager = ManagerFactory.getTvManager(this);

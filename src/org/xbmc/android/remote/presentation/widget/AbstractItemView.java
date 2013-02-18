@@ -31,6 +31,7 @@ public abstract class AbstractItemView extends View {
 	protected final int mWidth;
 	protected final Drawable mSelection;
 	protected int mDefaultColor = Color.WHITE;
+	protected int mDefaultAlpha = 90;
 	
 	private final Handler mHandler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
@@ -86,6 +87,7 @@ public abstract class AbstractItemView extends View {
 			mSelection.draw(canvas);
 		} else {
 			PAINT.setColor(mDefaultColor);
+			PAINT.setAlpha(mDefaultAlpha);
 			canvas.drawRect(posterWidth, 0, canvasWidth, posterHeight, PAINT);
 		}
 		
@@ -105,8 +107,11 @@ public abstract class AbstractItemView extends View {
 				}
 			Rect dst = getPosterRect();
 			PAINT.setColor(mDefaultColor);
-			canvas.drawRect(0, 0, posterWidth, posterHeight, PAINT);
 			canvas.drawBitmap(cover, src, dst, PAINT);
+			
+			PAINT.setAlpha(mDefaultAlpha);
+			canvas.drawRect(0, 0, posterWidth, posterHeight, PAINT);
+			
 		}
 	}
 	

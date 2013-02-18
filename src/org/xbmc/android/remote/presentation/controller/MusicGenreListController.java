@@ -38,7 +38,6 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -46,7 +45,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
 
 public class MusicGenreListController extends ListController implements IController {
 	
@@ -55,8 +56,9 @@ public class MusicGenreListController extends ListController implements IControl
 	
 	private IMusicManager mMusicManager;
 	
-	public void onCreate(Activity activity, Handler handler, AbsListView list) {
+	public void onCreate(SherlockFragment fragment, Handler handler, AbsListView list) {
 		
+		Activity activity = fragment.getActivity();
 		mMusicManager = ManagerFactory.getMusicManager(this);
 		
 		if (!isCreated()) {
@@ -83,7 +85,7 @@ public class MusicGenreListController extends ListController implements IControl
 				public void run() {
 					if (value.size() > 0) {
 						setTitle(title + " (" + value.size() + ")");
-						((ListView)mList).setAdapter(new GenreAdapter(mActivity, value));
+						setAdapter(new GenreAdapter(mActivity, value));
 					} else {
 						setTitle(title);
 						setNoDataMessage("No genres found.", R.drawable.icon_genre_dark);
@@ -108,7 +110,7 @@ public class MusicGenreListController extends ListController implements IControl
 		menu.add(0, ITEM_CONTEXT_PLAY, 2, "Play " + genre.name + " songs");
 	}
 	
-	public void onContextItemSelected(MenuItem item) {
+	public void onContextItemSelected(android.view.MenuItem item) {
 		// be aware that this must be explicitly called by your activity!
 		final Genre genre = (Genre)mList.getAdapter().getItem(((OneLabelItemView)((AdapterContextMenuInfo)item.getMenuInfo()).targetView).position);
 		switch (item.getItemId()) {
@@ -158,7 +160,7 @@ public class MusicGenreListController extends ListController implements IControl
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		mMusicManager = ManagerFactory.getMusicManager(this);
 	}

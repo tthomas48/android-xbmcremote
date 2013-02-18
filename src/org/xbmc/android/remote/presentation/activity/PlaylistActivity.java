@@ -31,7 +31,6 @@ import org.xbmc.api.business.IEventClientManager;
 import org.xbmc.api.type.ThumbSize;
 import org.xbmc.eventclient.ButtonCodes;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build.VERSION;
 import android.os.Bundle;
@@ -40,7 +39,6 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -48,7 +46,9 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class PlaylistActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+
+public class PlaylistActivity extends SherlockActivity {
 
 	private PlaylistController mPlaylistController;
 
@@ -99,7 +99,6 @@ public class PlaylistActivity extends Activity {
 
 		// create and associate logic
 		mPlaylistController = new PlaylistController();
-		mPlaylistController.findTitleView(findViewById(R.id.playlist_outer_layout));
 		mPlaylistController.findMessageView(findViewById(R.id.playlist_outer_layout));
 		mPlaylistController.onCreate(this, new Handler(), (ListView) findViewById(R.id.playlist_list));
 
@@ -141,7 +140,7 @@ public class PlaylistActivity extends Activity {
 		mConfigurationManager.onActivityPause();
 	}
 
-	@Override
+/*	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		mPlaylistController.onCreateOptionsMenu(menu);
 		return super.onCreateOptionsMenu(menu);
@@ -152,7 +151,7 @@ public class PlaylistActivity extends Activity {
 		mPlaylistController.onOptionsItemSelected(item);
 		return super.onOptionsItemSelected(item);
 	}
-
+*/
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		mPlaylistController.onCreateContextMenu(menu, v, menuInfo);

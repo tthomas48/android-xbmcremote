@@ -24,7 +24,6 @@ package org.xbmc.android.remote.presentation.activity;
 import org.xbmc.android.remote.R;
 import org.xbmc.android.remote.business.ManagerFactory;
 import org.xbmc.android.remote.presentation.controller.NowPlayingController;
-import org.xbmc.android.remote.presentation.controller.RemoteController;
 import org.xbmc.android.remote.presentation.widget.JewelView;
 import org.xbmc.android.util.KeyTracker;
 import org.xbmc.android.util.KeyTracker.Stage;
@@ -35,8 +34,6 @@ import org.xbmc.api.type.ThumbSize;
 import org.xbmc.eventclient.ButtonCodes;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build.VERSION;
@@ -44,8 +41,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -53,7 +48,9 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-public class NowPlayingActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+
+public class NowPlayingActivity extends SherlockActivity {
 
 	private TextView mTopTitleView;
 	private TextView mBottomTitleView;
@@ -191,7 +188,7 @@ public class NowPlayingActivity extends Activity {
 		mPlayPauseView.setBackgroundResource(R.drawable.now_playing_play);
 	}
 
-	@Override
+/*	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 		menu.add(0, MENU_REMOTE, 0, "Remote control").setIcon(
@@ -222,7 +219,7 @@ public class NowPlayingActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+*/
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		IEventClientManager client = ManagerFactory

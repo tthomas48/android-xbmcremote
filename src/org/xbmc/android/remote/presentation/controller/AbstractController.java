@@ -52,6 +52,10 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+
 /**
  * Every controller should extend this class. Takes care of the messages.
  * 
@@ -69,6 +73,12 @@ public abstract class AbstractController implements INotifiableController {
 	protected boolean mPaused = true;
 	
 	private Thread mWaitForWifi;
+	
+	public void onCreate(SherlockPreferenceActivity activity, Handler handler) {
+		mActivity = activity;
+		mHandler = handler;
+		HostFactory.readHost(activity.getApplicationContext());
+	}
 	
 	public void onCreate(Activity activity, Handler handler) {
 		mActivity = activity;
@@ -340,7 +350,17 @@ public abstract class AbstractController implements INotifiableController {
 		mPaused = true;
 	}
 
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
+		mActivity = activity;
+		mPaused = false;
+	}
+	
+	public void onActivityResume(SherlockFragment fragment) {
+		mActivity = fragment.getActivity();
+		mPaused = false;
+	}
+	
+	public void onActivityResume(SherlockPreferenceActivity activity) {
 		mActivity = activity;
 		mPaused = false;
 	}

@@ -30,11 +30,11 @@ import org.xbmc.eventclient.ButtonCodes;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceActivity;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
+
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
 /**
  * Because we can't add menus to child PreferenceScreens, we're forced to 
@@ -42,7 +42,7 @@ import android.view.MenuItem;
  * 
  * @author Team XBMC
  */
-public class HostSettingsActivity extends PreferenceActivity {
+public class HostSettingsActivity extends SherlockPreferenceActivity {
 	
 	private ConfigurationManager mConfigurationManager;
 	private SettingsController mSettingsController;
@@ -60,11 +60,11 @@ public class HostSettingsActivity extends PreferenceActivity {
 		setPreferenceScreen(mSettingsController.createHostsPreferences(getPreferenceManager().createPreferenceScreen(this), this));
 	}
 	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		mSettingsController.onCreateOptionsMenu(menu);
-		return super.onCreateOptionsMenu(menu);
-	}
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		mSettingsController.onCreateOptionsMenu(menu);
+//		return super.onCreateOptionsMenu(menu);
+//	}
 	
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {

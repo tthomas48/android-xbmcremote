@@ -26,17 +26,12 @@ import org.xbmc.android.remote.business.ManagerFactory;
 import org.xbmc.android.remote.presentation.controller.ActorListController;
 import org.xbmc.android.remote.presentation.controller.FileListController;
 import org.xbmc.android.remote.presentation.controller.MovieGenreListController;
-import org.xbmc.android.remote.presentation.controller.RemoteController;
 import org.xbmc.android.remote.presentation.controller.TvShowListController;
-import org.xbmc.android.widget.slidingtabs.SlidingTabActivity;
-import org.xbmc.android.widget.slidingtabs.SlidingTabHost;
-import org.xbmc.android.widget.slidingtabs.SlidingTabHost.OnTabChangeListener;
 import org.xbmc.api.business.IEventClientManager;
 import org.xbmc.api.type.MediaType;
 import org.xbmc.eventclient.ButtonCodes;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,16 +39,17 @@ import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
-public class TvShowLibraryActivity extends SlidingTabActivity implements ViewTreeObserver.OnGlobalLayoutListener {
+import com.actionbarsherlock.app.SherlockActivity;
 
-	private SlidingTabHost mTabHost;
+public class TvShowLibraryActivity extends SherlockActivity implements ViewTreeObserver.OnGlobalLayoutListener {
+
+	//private SlidingTabHost mTabHost;
 	
 	private TvShowListController mTvShowController;
 	private ActorListController mActorController;
@@ -79,34 +75,31 @@ public class TvShowLibraryActivity extends SlidingTabActivity implements ViewTre
 		FrameLayout topFrame = (FrameLayout)findViewById(android.R.id.content);
 		topFrame.setForeground(null);
 		
-		mTabHost = getTabHost();
+		//mTabHost = getTabHost();
 		
 		// add the tabs
-		mTabHost.addTab(mTabHost.newTabSpec("tab_tv", "TV Shows", R.drawable.st_tv_on, R.drawable.st_tv_off).setBigIcon(R.drawable.st_tv_over).setContent(R.id.tvshowlist_outer_layout));
-		mTabHost.addTab(mTabHost.newTabSpec("tab_actors", "Actors", R.drawable.st_actor_on, R.drawable.st_actor_off).setBigIcon(R.drawable.st_actor_over).setContent(R.id.actorlist_outer_layout));
-		mTabHost.addTab(mTabHost.newTabSpec("tab_genres", "Genres", R.drawable.st_genre_on, R.drawable.st_genre_off).setBigIcon(R.drawable.st_genre_over).setContent(R.id.genrelist_outer_layout));
-		mTabHost.addTab(mTabHost.newTabSpec("tab_files", "File Mode", R.drawable.st_filemode_on, R.drawable.st_filemode_off).setBigIcon(R.drawable.st_filemode_over).setContent(R.id.filelist_outer_layout));
+		//mTabHost.addTab(mTabHost.newTabSpec("tab_tv", "TV Shows", R.drawable.st_tv_on, R.drawable.st_tv_off).setBigIcon(R.drawable.st_tv_over).setContent(R.id.tvshowlist_outer_layout));
+		//mTabHost.addTab(mTabHost.newTabSpec("tab_actors", "Actors", R.drawable.st_actor_on, R.drawable.st_actor_off).setBigIcon(R.drawable.st_actor_over).setContent(R.id.actorlist_outer_layout));
+		//mTabHost.addTab(mTabHost.newTabSpec("tab_genres", "Genres", R.drawable.st_genre_on, R.drawable.st_genre_off).setBigIcon(R.drawable.st_genre_over).setContent(R.id.genrelist_outer_layout));
+		//mTabHost.addTab(mTabHost.newTabSpec("tab_files", "File Mode", R.drawable.st_filemode_on, R.drawable.st_filemode_off).setBigIcon(R.drawable.st_filemode_over).setContent(R.id.filelist_outer_layout));
 		
-		mTabHost.getViewTreeObserver().addOnGlobalLayoutListener(this);
+		//mTabHost.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
 		// assign the gui logic to each tab
 		mHandler = new Handler();
 		mTvShowController = new TvShowListController();
-		mTvShowController.findTitleView(findViewById(R.id.tvshowlist_outer_layout));
 		mTvShowController.findMessageView(findViewById(R.id.tvshowlist_outer_layout));
 
 		mActorController = new ActorListController(ActorListController.TYPE_TVSHOW);
-		mActorController.findTitleView(findViewById(R.id.actorlist_outer_layout));
 		mActorController.findMessageView(findViewById(R.id.actorlist_outer_layout));
 
 		mGenresController = new MovieGenreListController(MovieGenreListController.TYPE_TVSHOW);
-		mGenresController.findTitleView(findViewById(R.id.genrelist_outer_layout));
 		mGenresController.findMessageView(findViewById(R.id.genrelist_outer_layout));
 
 		mFileController = new FileListController(MediaType.VIDEO);
-		mFileController.findTitleView(findViewById(R.id.filelist_outer_layout));
 		mFileController.findMessageView(findViewById(R.id.filelist_outer_layout));
 		
+		/*
 		mTabHost.setOnTabChangedListener(new OnTabChangeListener() {
 			public void onTabChanged(String tabId) {
 				
@@ -118,17 +111,18 @@ public class TvShowLibraryActivity extends SlidingTabActivity implements ViewTre
 				}
 			}
 		});
+		*/
 		mConfigurationManager = ConfigurationManager.getInstance(this);
 	}
 	
 	public void onGlobalLayout() {
-        mTabHost.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        //mTabHost.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 		
 		String lastTab = "tab_tv";
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 		if (prefs.getBoolean(PREF_REMEMBER_TAB, false)) {
 			lastTab = (getSharedPreferences("global", Context.MODE_PRIVATE).getString(LAST_TVSHOW_TAB_ID, "tab_tv"));
-			mTabHost.selectTabByTag(lastTab);
+			//mTabHost.selectTabByTag(lastTab);
 		}
 		
 		initTab(lastTab);
@@ -149,6 +143,8 @@ public class TvShowLibraryActivity extends SlidingTabActivity implements ViewTre
 		}
 	}
 	
+	/*
+	 * TODO: Convert this to tabs
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
@@ -212,10 +208,12 @@ public class TvShowLibraryActivity extends SlidingTabActivity implements ViewTre
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	*/
 	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+		/*
 		switch (mTabHost.getCurrentTab()) {
 			case 0:
 				mTvShowController.onCreateContextMenu(menu, v, menuInfo);
@@ -230,10 +228,12 @@ public class TvShowLibraryActivity extends SlidingTabActivity implements ViewTre
 				mFileController.onCreateContextMenu(menu, v, menuInfo);
 				break;
 		}
+		*/
 	}
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+		/*
 		switch (mTabHost.getCurrentTab()) {
 		case 0:
 			mTvShowController.onContextItemSelected(item);
@@ -248,6 +248,7 @@ public class TvShowLibraryActivity extends SlidingTabActivity implements ViewTre
 			mFileController.onContextItemSelected(item);
 			break;
 		}
+		*/
 		return super.onContextItemSelected(item);
 	}
 	

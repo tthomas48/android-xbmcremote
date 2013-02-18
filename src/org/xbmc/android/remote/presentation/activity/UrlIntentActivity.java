@@ -25,16 +25,17 @@ package org.xbmc.android.remote.presentation.activity;
 import org.xbmc.android.remote.presentation.controller.UrlIntentController;
 import org.xbmc.api.type.ThumbSize;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Display;
+
+import com.actionbarsherlock.app.SherlockActivity;
 
 /**
  * @author Team XBMC
  *
  */
-public class UrlIntentActivity extends Activity {
+public class UrlIntentActivity extends SherlockActivity {
 
 	public static final String ACTION = "android.intent.action.SEND";
 	

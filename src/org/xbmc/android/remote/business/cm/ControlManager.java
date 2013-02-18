@@ -28,7 +28,6 @@ import org.xbmc.api.type.MediaType;
 import org.xbmc.api.type.SeekType;
 
 import android.content.Context;
-import android.util.Log;
 
 public class ControlManager extends AbstractManager implements IControlManager {
 

@@ -21,9 +21,9 @@
 
 package org.xbmc.android.remote.presentation.controller;
 
-import android.app.Activity;
+import com.actionbarsherlock.app.SherlockActivity;
 
 public interface IController {
 	public void onActivityPause();
-	public void onActivityResume(Activity activity);
+	public void onActivityResume(SherlockActivity activity);
 }

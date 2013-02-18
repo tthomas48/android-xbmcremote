@@ -54,7 +54,6 @@ import android.os.Message;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -64,6 +63,9 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 public class PlaylistController extends ListController implements IController, Callback {
 	
@@ -315,7 +317,7 @@ public class PlaylistController extends ListController implements IController, C
 		menu.add(0, ITEM_CONTEXT_REMOVE, 2, "Remove");*/
 	}
 	
-	public void onContextItemSelected(MenuItem item) {
+	public void onContextItemSelected(android.view.MenuItem item) {
 		// be aware that this must be explicitly called by your activity!
 		final PlaylistItem playlistItem = (PlaylistItem)mList.getAdapter().getItem(((OneLabelItemView)((AdapterContextMenuInfo)item.getMenuInfo()).targetView).position);
 		switch (item.getItemId()) {
@@ -423,7 +425,7 @@ public class PlaylistController extends ListController implements IController, C
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(final Activity activity) {
+	public void onActivityResume(final SherlockActivity activity) {
 		super.onActivityResume(activity);
 		new Thread("playlist-spawning") {
 			@Override

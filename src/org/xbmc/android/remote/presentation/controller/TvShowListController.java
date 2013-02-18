@@ -56,9 +56,6 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -68,6 +65,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.SubMenu;
 
 public class TvShowListController extends ListController implements IController {
 	
@@ -95,7 +97,7 @@ public class TvShowListController extends ListController implements IController 
 	
 	private static Bitmap mWatchedBitmap;
 	
-	public void onCreate(Activity activity, Handler handler, AbsListView list) {
+	public void onCreate(SherlockActivity activity, Handler handler, AbsListView list) {
 		
 		mTvManager = ManagerFactory.getTvManager(this);
 		mControlManager = ManagerFactory.getControlManager(this);
@@ -205,7 +207,7 @@ public class TvShowListController extends ListController implements IController 
 		menu.add(0, ITEM_CONTEXT_IMDB, 3, "Open IMDb");
 	}
 	
-	public void onContextItemSelected(MenuItem item) {
+	public void onContextItemSelected(android.view.MenuItem item) {
 		final TvShow show = (TvShow)mList.getAdapter().getItem(((FiveLabelsItemView)((AdapterContextMenuInfo)item.getMenuInfo()).targetView).position);
 		switch (item.getItemId()) {
 			case ITEM_CONTEXT_BROWSE:
@@ -357,7 +359,7 @@ public class TvShowListController extends ListController implements IController 
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		mTvManager = ManagerFactory.getTvManager(this);
 		mControlManager = ManagerFactory.getControlManager(this);

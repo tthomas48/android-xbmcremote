@@ -44,7 +44,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -54,6 +53,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
 
 public class FileListController extends ListController implements IController {
 	
@@ -76,6 +78,11 @@ public class FileListController extends ListController implements IController {
 	
 	public FileListController(int mediaType) {
 		mMediaType = mediaType;
+	}
+	
+	public void onCreate(SherlockFragment fragment, Handler handler, AbsListView list) {
+		Activity activity = fragment.getActivity();
+		onCreate(activity, handler, list);
 	}
 	
 	public void onCreate(Activity activity, Handler handler, AbsListView list) {
@@ -225,12 +232,12 @@ public class FileListController extends ListController implements IController {
 	public void setListAdapter(ListAdapter adapter) {
         synchronized (this) {
             mAdapter = adapter;
-            ((ListView)mList).setAdapter(adapter);
+            setAdapter(adapter);
         }
     }
 
 	@Override
-	public void onContextItemSelected(MenuItem item) {
+	public void onContextItemSelected(android.view.MenuItem item) {
 		// be aware that this must be explicitly called by your activity!
 		final FileLocation loc = (FileLocation) mList.getAdapter().getItem(((OneLabelItemView)((AdapterContextMenuInfo)item.getMenuInfo()).targetView).position);
 		switch(item.getItemId()) {
@@ -263,7 +270,7 @@ public class FileListController extends ListController implements IController {
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		mInfoManager = ManagerFactory.getInfoManager(this);
 		mControlManager = ManagerFactory.getControlManager(this);
 		super.onActivityResume(activity);

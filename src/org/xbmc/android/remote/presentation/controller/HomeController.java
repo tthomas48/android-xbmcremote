@@ -88,6 +88,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+
 public class HomeController extends AbstractController implements
 		INotifiableController, IController, Observer,
 		OnSharedPreferenceChangeListener {
@@ -121,7 +123,7 @@ public class HomeController extends AbstractController implements
 
 	private final GridView mMenuGrid;
 
-	public HomeController(Activity activity, Handler handler, GridView menuGrid) {
+	public HomeController(SherlockActivity activity, Handler handler, GridView menuGrid) {
 		super.onCreate(activity, handler);
 		mInfoManager = ManagerFactory.getInfoManager(this);
 		mMenuGrid = menuGrid;
@@ -704,7 +706,7 @@ public class HomeController extends AbstractController implements
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		mInfoManager = ManagerFactory.getInfoManager(this);
 		mInfoManager.getSystemVersion(mUpdateVersionHandler,

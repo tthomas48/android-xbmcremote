@@ -1,96 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
-	package="org.xbmc.android.remote"
-	android:versionName="0.9.0" 
-	android:versionCode="900" 
-	android:installLocation="auto">
-	
-	<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="10" />
-	
-	<supports-screens
-		android:largeScreens="true"
-		android:normalScreens="true"
-		android:smallScreens="true"
-		android:xlargeScreens="true"
-		android:anyDensity="true" />
-	
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.VIBRATE" />
-	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
-	<uses-permission android:name="android.permission.RECEIVE_SMS" />
-	<uses-permission android:name="android.permission.READ_CONTACTS" />
-	<uses-permission android:name="android.permission.READ_SMS" />
-	<uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-	
-	<uses-feature android:name="android.hardware.telephony" android:required="false" />
-	<uses-feature android:name="android.hardware.location.network" android:required="false" />
-	
-	<application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true" android:name=".presentation.activity.RemoteApplication">
-		<activity android:name=".presentation.activity.HomeActivity"
-			android:label="@string/app_name"
-			android:theme="@android:style/Theme.NoTitleBar" >
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
-		<activity android:name=".presentation.activity.RemoteActivity" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-		<activity android:name=".presentation.activity.MusicLibraryActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.MusicArtistActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.MusicGenreActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.MovieLibraryActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.MovieDetailsActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.TvShowDetailsActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.ListActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.GridActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.TvShowLibraryActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.NowPlayingActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.PlaylistActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.AboutActivity" android:theme="@android:style/Theme.NoTitleBar" android:screenOrientation="portrait"/>
-		<activity android:name=".presentation.activity.GestureRemoteActivity" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:screenOrientation="portrait"/>
-		<activity android:name=".presentation.activity.SettingsActivity" />
-		<activity android:name=".presentation.activity.HostSettingsActivity" />
-		<activity android:name=".presentation.activity.EpisodeDetailsActivity" android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name=".presentation.activity.MediaIntentActivity" android:theme="@android:style/Theme.NoTitleBar" android:label="@string/play_on_xbmc">
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.DEFAULT" />
-				<category android:name="android.intent.category.BROWSABLE" />
-				<data android:scheme="http" android:mimeType="image/*"/>
-				<data android:scheme="http" android:mimeType="video/*"/>
-				<data android:scheme="http" android:mimeType="audio/*"/>
-				<data android:scheme="http" android:host="youtube.com"/>
-				<data android:scheme="http" android:host="www.youtube.com"/>
-			</intent-filter>
-		</activity>
-		<activity android:name=".presentation.activity.UrlIntentActivity" android:theme="@android:style/Theme.NoTitleBar" android:label="@string/play_on_xbmc">
-			<intent-filter>
-				<action android:name="android.intent.action.SEND"></action>
-				<category android:name="android.intent.category.DEFAULT"></category>
-				<data android:mimeType="text/plain" />
-			</intent-filter>
-		</activity>
-		<activity android:name=".presentation.wizard.setupwizard.SetupWizard"></activity>
-		<receiver android:name=".business.receiver.AndroidBroadcastReceiver" android:label="@string/app_receiver">
-			<intent-filter>
-				<action android:name="android.provider.Telephony.SMS_RECEIVED" />
-				<action android:name="android.intent.action.PHONE_STATE" />
-			</intent-filter>
-		</receiver>
-		<receiver android:name=".business.receiver.AutoStartReceiver"
-			android:process="android.process.im">
-			<intent-filter>
-				<action android:name="android.intent.action.BOOT_COMPLETED"/>
-			</intent-filter>
-		</receiver>
-		<provider android:name=".business.provider.HostProvider" android:authorities="org.xbmc.android.provider.remote" />
-		<service android:name="org.xbmc.android.jsonrpc.service.ConnectionService" />
-		
-	</application>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.xbmc.android.remote"
+    android:installLocation="auto"
+    android:versionCode="900"
+    android:versionName="0.9.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="org.xbmc.android.remote.presentation.activity.HomeActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.xbmc.android.remote.presentation.activity.RemoteActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <activity
+            android:name="org.xbmc.android.remote.presentation.activity.MusicLibraryActivity"
+            android:label="@string/title_activity_music_library"
+            android:parentActivityName="org.xbmc.android.remote.presentation.activity.HomeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.xbmc.android.remote.presentation.activity.HomeActivity" />
+        </activity>
+        <activity android:name="org.xbmc.android.remote.presentation.activity.MusicArtistActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.MusicGenreActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.MovieLibraryActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.MovieDetailsActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.TvShowDetailsActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.ListActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.GridActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.TvShowLibraryActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.NowPlayingActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.PlaylistActivity" />
+        <activity
+            android:name="org.xbmc.android.remote.presentation.activity.AboutActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="org.xbmc.android.remote.presentation.activity.GestureRemoteActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.SettingsActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.HostSettingsActivity" />
+        <activity android:name="org.xbmc.android.remote.presentation.activity.EpisodeDetailsActivity" />
+        <activity
+            android:name="org.xbmc.android.remote.presentation.activity.MediaIntentActivity"
+            android:label="@string/play_on_xbmc" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:mimeType="image/*"
+                    android:scheme="http" />
+                <data
+                    android:mimeType="video/*"
+                    android:scheme="http" />
+                <data
+                    android:mimeType="audio/*"
+                    android:scheme="http" />
+                <data
+                    android:host="youtube.com"
+                    android:scheme="http" />
+                <data
+                    android:host="www.youtube.com"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.xbmc.android.remote.presentation.activity.UrlIntentActivity"
+            android:label="@string/play_on_xbmc" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" >
+                </action>
+
+                <category android:name="android.intent.category.DEFAULT" >
+                </category>
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity android:name="org.xbmc.android.remote.presentation.wizard.setupwizard.SetupWizard" >
+        </activity>
+
+        <receiver
+            android:name="org.xbmc.android.remote.business.receiver.AndroidBroadcastReceiver"
+            android:label="@string/app_receiver" >
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="org.xbmc.android.remote.business.receiver.AutoStartReceiver"
+            android:process="android.process.im" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="org.xbmc.android.remote.business.provider.HostProvider"
+            android:authorities="org.xbmc.android.provider.remote" />
+
+        <service android:name="org.xbmc.android.jsonrpc.service.ConnectionService" />
+    </application>
+
 </manifest>

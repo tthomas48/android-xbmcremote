@@ -5,10 +5,11 @@ import org.xbmc.api.business.IEventClientManager;
 import org.xbmc.api.presentation.INotifiableController;
 import org.xbmc.eventclient.ButtonCodes;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+
+import com.actionbarsherlock.app.SherlockActivity;
 
 public class GestureController extends AbstractController implements INotifiableController, IController {
 	
@@ -85,7 +86,7 @@ public class GestureController extends AbstractController implements INotifiable
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		mEventClientManager = ManagerFactory.getEventClientManager(this);
 	}

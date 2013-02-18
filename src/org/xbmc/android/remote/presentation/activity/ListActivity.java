@@ -23,6 +23,9 @@ package org.xbmc.android.remote.presentation.activity;
 
 import org.xbmc.android.remote.R;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.MenuItem;
+
 import android.os.Bundle;
 
 /**
@@ -38,6 +41,21 @@ public class ListActivity extends AbsListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		final ActionBar actionBar = getSupportActionBar();
+		// Show the Up button in the action bar.
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		setupLists(R.layout.blanklist);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+
 	}
 }

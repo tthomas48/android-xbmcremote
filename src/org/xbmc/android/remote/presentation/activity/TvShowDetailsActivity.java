@@ -67,7 +67,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class TvShowDetailsActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+
+public class TvShowDetailsActivity extends SherlockActivity {
 	
 	private static final String NO_DATA = "-";
 	
@@ -146,7 +148,7 @@ public class TvShowDetailsActivity extends Activity {
 		private IControlManager mControlManager;
 		private final TvShow mShow;
 		
-		TvShowDetailsController(Activity activity, TvShow show) {
+		TvShowDetailsController(SherlockActivity activity, TvShow show) {
 			super.onCreate(activity, new Handler());
 			mActivity = activity;
 			mShow = show;

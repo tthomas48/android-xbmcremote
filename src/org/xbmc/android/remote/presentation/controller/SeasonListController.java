@@ -44,9 +44,6 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -56,6 +53,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.SubMenu;
 
 public class SeasonListController extends ListController implements IController {
 
@@ -79,7 +81,7 @@ public class SeasonListController extends ListController implements IController 
 
 	private boolean mLoadCovers = false;
 
-	public void onCreate(Activity activity, Handler handler, AbsListView list) {
+	public void onCreate(SherlockActivity activity, Handler handler, AbsListView list) {
 
 		mTvManager = ManagerFactory.getTvManager(this);
 		mControlManager = ManagerFactory.getControlManager(this);
@@ -190,7 +192,7 @@ public class SeasonListController extends ListController implements IController 
 		menu.add(0, ITEM_CONTEXT_BROWSE, 1, "Browse Season");
 	}
 
-	public void onContextItemSelected(MenuItem item) {
+	public void onContextItemSelected(android.view.MenuItem item) {
 		// final Season season =
 		// (Season)mList.getAdapter().getItem(((GridPosterItemView)view).position);
 		final Season season = (Season) mList.getAdapter().getItem(
@@ -298,7 +300,7 @@ public class SeasonListController extends ListController implements IController 
 		super.onActivityPause();
 	}
 
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		mTvManager = ManagerFactory.getTvManager(this);
 		mControlManager = ManagerFactory.getControlManager(this);

@@ -124,6 +124,8 @@ class ConfigurationManager implements OnSharedPreferenceChangeListener {
 		activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		mActivity = activity;
 	}
+
+	
 	
 	public void onActivityPause() {
 		if (mKeyguardLock != null){

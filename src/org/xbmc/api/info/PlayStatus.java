@@ -21,7 +21,6 @@ $ *      Copyright (C) 2005-2009 Team XBMC
 
 package org.xbmc.api.info;
 
-import android.util.Log;
 
 
 /**

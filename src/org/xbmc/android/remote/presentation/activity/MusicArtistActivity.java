@@ -23,185 +23,85 @@ package org.xbmc.android.remote.presentation.activity;
 
 import org.xbmc.android.remote.R;
 import org.xbmc.android.remote.business.ManagerFactory;
-import org.xbmc.android.remote.presentation.controller.AlbumListController;
-import org.xbmc.android.remote.presentation.controller.RemoteController;
-import org.xbmc.android.remote.presentation.controller.SongListController;
-import org.xbmc.android.widget.slidingtabs.SlidingTabActivity;
-import org.xbmc.android.widget.slidingtabs.SlidingTabHost;
-import org.xbmc.android.widget.slidingtabs.SlidingTabHost.OnTabChangeListener;
 import org.xbmc.api.business.IEventClientManager;
 import org.xbmc.eventclient.ButtonCodes;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ListView;
+import android.view.Window;
 
-public class MusicArtistActivity extends SlidingTabActivity  {
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
 
-	private SlidingTabHost mTabHost;
-	private AlbumListController mAlbumController;
-	private SongListController mSongController;
-	
-	private ConfigurationManager mConfigurationManager;
-	
-	private static final int MENU_NOW_PLAYING = 101;
-	private static final int MENU_REMOTE = 102;
-	
-	private Handler mHandler;
-	
+public class MusicArtistActivity extends SherlockFragmentActivity {
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.musicartist);
-		
-		// remove nasty top fading edge
-		FrameLayout topFrame = (FrameLayout)findViewById(android.R.id.content);
-		topFrame.setForeground(null);
-		
-		mTabHost = getTabHost();
+		setContentView(R.layout.activity_music_artist);
 
-		mTabHost.addTab(mTabHost.newTabSpec("musictab1", "Albums", R.drawable.st_album_on, R.drawable.st_album_off).setBigIcon(R.drawable.st_album_over).setContent(R.id.albumlist_outer_layout));
-		mTabHost.addTab(mTabHost.newTabSpec("musictab2", "Songs", R.drawable.st_song_on, R.drawable.st_song_off).setBigIcon(R.drawable.st_song_over).setContent(R.id.songlist_outer_layout));
-		mTabHost.setCurrentTab(0);
-		
-		mHandler = new Handler();
-		mAlbumController = new AlbumListController();
-		mAlbumController.findTitleView(findViewById(R.id.albumlist_outer_layout));
-		mAlbumController.findMessageView(findViewById(R.id.albumlist_outer_layout));
-		mAlbumController.onCreate(this, mHandler, (ListView)findViewById(R.id.albumlist_list)); // first tab can be updated now.
+		// Set up the action bar.
+		final ActionBar actionBar = getSupportActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		// Show the Up button in the action bar.
+		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		mSongController = new SongListController();
-		mSongController.findTitleView(findViewById(R.id.songlist_outer_layout));
-		mSongController.findMessageView(findViewById(R.id.songlist_outer_layout));
-		
-		mTabHost.setOnTabChangedListener(new OnTabChangeListener() {
-			public void onTabChanged(String tabId) {
-				if (tabId.equals("musictab1")) {
-					mAlbumController.onCreate(MusicArtistActivity.this, mHandler, (ListView)findViewById(R.id.albumlist_list));
-				}
-				if (tabId.equals("musictab2")) {
-					mSongController.onCreate(MusicArtistActivity.this, mHandler, (ListView)findViewById(R.id.songlist_list));
-				}
-			}
-		});
-		
-		
-		mConfigurationManager = ConfigurationManager.getInstance(this);
+		actionBar
+				.addTab(getSupportActionBar()
+						.newTab()
+						.setText("Albums")
+						.setIcon(R.drawable.st_album_off)
+						.setTabListener(
+								new ListTabListener<MusicLibraryAlbumFragment>(
+										this, "tab_albums",
+										MusicLibraryAlbumFragment.class)), true);
+
+		// TODO Add the song fragment
+		actionBar.addTab(
+				getSupportActionBar()
+						.newTab()
+						.setText("Songs")
+						.setIcon(R.drawable.st_album_off)
+						.setTabListener(
+								new ListTabListener<MusicLibrarySongFragment>(
+										this, "tab_songs",
+										MusicLibrarySongFragment.class)), false);
+
 	}
-	
-	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		menu.clear();
-		menu.add(0, MENU_NOW_PLAYING, 0, "Now playing").setIcon(R.drawable.menu_nowplaying);
-		switch (mTabHost.getCurrentTab()) {
-			case 0:
-				mAlbumController.onCreateOptionsMenu(menu);
-				break;
-			case 1:
-				mSongController.onCreateOptionsMenu(menu);
-				break;
-		}
-		menu.add(0, MENU_REMOTE, 0, "Remote control").setIcon(R.drawable.menu_remote);
-		return super.onPrepareOptionsMenu(menu);
-	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
-		// first, process individual menu events
-		switch (mTabHost.getCurrentTab()) {
-		case 0:
-			mAlbumController.onOptionsItemSelected(item);
-			break;
-		case 1:
-			mSongController.onOptionsItemSelected(item);
-			break;
-		}
-		
-		// then the generic ones.
-		switch (item.getItemId()) {
-		case MENU_REMOTE:
-			final Intent intent;
-			if (getSharedPreferences("global", Context.MODE_PRIVATE).getInt(RemoteController.LAST_REMOTE_PREFNAME, -1) == RemoteController.LAST_REMOTE_GESTURE) {
-				intent = new Intent(this, GestureRemoteActivity.class);
-			} else {
-				intent = new Intent(this, RemoteActivity.class);
-			}
-			intent.addFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
-			startActivity(intent);
-			return true;
-		case MENU_NOW_PLAYING:
-			startActivity(new Intent(this,  NowPlayingActivity.class));
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			finish();
 			return true;
 		}
+
 		return super.onOptionsItemSelected(item);
+
 	}
-	
-	
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		switch (mTabHost.getCurrentTab()) {
-			case 0:
-				mAlbumController.onCreateContextMenu(menu, v, menuInfo);
-				break;
-			case 1:
-				mSongController.onCreateContextMenu(menu, v, menuInfo);
-				break;
-		}
-	}
-	
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		switch (mTabHost.getCurrentTab()) {
-		case 0:
-			mAlbumController.onContextItemSelected(item);
-			break;
-		case 1:
-			mSongController.onContextItemSelected(item);
-			break;
-		}
-		return super.onContextItemSelected(item);
-	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		IEventClientManager client = ManagerFactory.getEventClientManager(mAlbumController);
+		// TODO: this technically should have a controller attached so that it
+		// can update
+		// the screen. Somehow we should be able to get the controller from the
+		// current tab
+		IEventClientManager client = ManagerFactory.getEventClientManager(null);
 		switch (keyCode) {
-			case KeyEvent.KEYCODE_VOLUME_UP:
-				client.sendButton("R1", ButtonCodes.REMOTE_VOLUME_PLUS, false, true, true, (short)0, (byte)0);
-				return true;
-			case KeyEvent.KEYCODE_VOLUME_DOWN:
-				client.sendButton("R1", ButtonCodes.REMOTE_VOLUME_MINUS, false, true, true, (short)0, (byte)0);
-				return true;
+		case KeyEvent.KEYCODE_VOLUME_UP:
+			client.sendButton("R1", ButtonCodes.REMOTE_VOLUME_PLUS, false,
+					true, true, (short) 0, (byte) 0);
+			return true;
+		case KeyEvent.KEYCODE_VOLUME_DOWN:
+			client.sendButton("R1", ButtonCodes.REMOTE_VOLUME_MINUS, false,
+					true, true, (short) 0, (byte) 0);
+			return true;
 		}
 		client.setController(null);
 		return super.onKeyDown(keyCode, event);
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		mAlbumController.onActivityResume(this);
-		mSongController.onActivityResume(this);
-		mConfigurationManager.onActivityResume(this);
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mAlbumController.onActivityPause();
-		mSongController.onActivityPause();
-		mConfigurationManager.onActivityPause();
 	}
 }

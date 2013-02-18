@@ -39,7 +39,6 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -47,6 +46,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
 
 public class MovieGenreListController extends ListController implements IController {
 	
@@ -61,8 +63,9 @@ public class MovieGenreListController extends ListController implements IControl
 		mType = type;
 	}
 	
-	public void onCreate(Activity activity, Handler handler, AbsListView list) {
+	public void onCreate(SherlockFragment fragment, Handler handler, AbsListView list) {
 		
+		Activity activity = fragment.getActivity();
 		mVideoManager = ManagerFactory.getVideoManager(this);
 		
 		if (!isCreated()) {
@@ -138,7 +141,7 @@ public class MovieGenreListController extends ListController implements IControl
 		// no context menu here
 	}
 	@Override
-	public void onContextItemSelected(MenuItem item) {
+	public void onContextItemSelected(android.view.MenuItem item) {
 		// no context menu here
 	}
 	
@@ -152,7 +155,7 @@ public class MovieGenreListController extends ListController implements IControl
 		super.onActivityPause();
 	}
 	
-	public void onActivityResume(Activity activity) {
+	public void onActivityResume(SherlockActivity activity) {
 		super.onActivityResume(activity);
 		mVideoManager = ManagerFactory.getVideoManager(this);
 		mTvShowManager = ManagerFactory.getTvManager(this);

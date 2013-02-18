@@ -33,14 +33,12 @@ import org.xbmc.api.business.IEventClientManager;
 import org.xbmc.api.type.ThumbSize;
 import org.xbmc.eventclient.ButtonCodes;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -48,9 +46,6 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -58,7 +53,12 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
 
-public class HomeActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.SubMenu;
+
+public class HomeActivity extends SherlockActivity {
 	
 	private static final String TAG = "HomeActivity";
 
@@ -89,28 +89,10 @@ public class HomeActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-/*		mConnectionManager = new ConnectionManager(getApplicationContext(), new HostConfig("192.168.0.100"));
-		
-		final AudioLibrary.GetAlbums getAlbumsCall = new AudioLibrary.GetAlbums(null, null, 
-				AudioModel.AlbumFields.TITLE, AudioModel.AlbumFields.ARTISTID, AudioModel.AlbumFields.YEAR);
-		
-		mConnectionManager.call(getAlbumsCall, new ApiCallback<AudioModel.AlbumDetails>(){
-			public void onResponse(AbstractCall<AlbumDetails> apiCall) {
-				for (AlbumDetails album : apiCall.getResults()) {
-					Log.d(TAG, "Got album: " + album.title + " (" + album.year + ")");
-				}
-			}
-			public void onError(int code, String message, String hint) {
-				Log.d(TAG, "Error " + code + ": " + message);
-			}
-		});*/
-		
 		setContentView(R.layout.home);
 		
-		if (Build.VERSION.SDK_INT >= 9) {
-			final StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-			StrictMode.setThreadPolicy(policy);
-		}
+		final StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
 		
 		// set display size
 		final Display display = getWindowManager().getDefaultDisplay(); 
